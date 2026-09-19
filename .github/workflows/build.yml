@@ -1,4 +1,4 @@
-name: Build APK from QX_PRO_READY
+name: Fixed JVM Target Build APK
 
 on:
   push:
@@ -12,10 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Set up JDK 8
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '8'
         distribution: 'temurin'
 
     - name: Unzip Uploaded Project
@@ -26,7 +26,6 @@ jobs:
       run: |
         cd QX_PRO_READY
         
-        # gradlew না থাকলে বা কাজ না করলে নতুন wrapper তৈরি করবে
         if [ ! -f "./gradlew" ]; then
           gradle wrapper
         fi
