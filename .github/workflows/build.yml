@@ -22,19 +22,20 @@ jobs:
       run: |
         unzip -o QX_PRO_READY_AndroidIDE.zip
 
-    - name: Make gradlew Executable & Build APK
+    - name: Setup Gradle & Build APK
       run: |
-        # QX_PRO_READY ফোল্ডারে যাওয়া
         cd QX_PRO_READY
         
-        # Permission দেওয়া
-        chmod +x gradlew
+        # gradlew না থাকলে বা কাজ না করলে নতুন wrapper তৈরি করবে
+        if [ ! -f "./gradlew" ]; then
+          gradle wrapper
+        fi
         
-        # Debug APK বিল্ড
-        ./gradlew assembleDebug
+        chmod +x gradlew
+        ./gradlew assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: QX-Pro-APK
-        path: "**/build/outputs/apk/debug/*.apk"
+        path: "QX_PRO_READY/app/build/outputs/apk/debug/*.apk"
