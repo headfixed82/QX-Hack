@@ -1,4 +1,4 @@
-name: Ultimate Auto Find and Build APK
+name: Build APK from QX_PRO_READY
 
 on:
   push:
@@ -22,33 +22,19 @@ jobs:
       run: |
         unzip -o QX_PRO_READY_AndroidIDE.zip
 
-    - name: Find Project and Setup Gradle
+    - name: Make gradlew Executable & Build APK
       run: |
-        # settings.gradle বা build.gradle যেখানে আছে সেই ফোল্ডার খুঁজে বের করবে
-        PROJECT_DIR=$(find . -name "settings.gradle*" -o -name "build.gradle*" | head -n 1 | xargs dirname)
-        echo "Project directory found at: $PROJECT_DIR"
+        # QX_PRO_READY ফোল্ডারে যাওয়া
+        cd QX_PRO_READY
         
-        # ফাইলগুলো মেইন ডিরেক্টরিতে সরিয়ে নিয়ে আসবে
-        if [ "$PROJECT_DIR" != "." ]; then
-          cp -rn "$PROJECT_DIR"/* .
-          cp -rn "$PROJECT_DIR"/.* . 2>/dev/null || true
-        fi
-        
-        # gradlew না থাকলে বানিয়ে নিবে
-        if [ ! -f "./gradlew" ]; then
-          gradle wrapper
-        fi
+        # Permission দেওয়া
         chmod +x gradlew
+        
+        # Debug APK বিল্ড
+        ./gradlew assembleDebug
 
-    - name: Setup Gradle Cache
-      uses: gradle/actions/setup-gradle@v3
-
-    - name: Build APK
-      run: ./gradlew assembleDebug --stacktrace
-
-    - name: Upload APK
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: QX-Pro-APK
         path: "**/build/outputs/apk/debug/*.apk"
-        
